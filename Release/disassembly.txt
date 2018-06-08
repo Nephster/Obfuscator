@@ -1,0 +1,304 @@
+00401000 (01) 55                       PUSH EBP
+00401001 (02) 8bec                     MOV EBP, ESP
+00401003 (03) 83ec10                   SUB ESP, 0x10
+00401006 (07) c745f800000000           MOV DWORD [EBP-0x8], 0x0
+0040100d (07) c745fc00000000           MOV DWORD [EBP-0x4], 0x0
+00401014 (03) 8d45fc                   LEA EAX, [EBP-0x4]
+00401017 (01) 50                       PUSH EAX
+00401018 (02) 6a08                     PUSH 0x8
+0040101a (06) ff1520204000             CALL DWORD [0x402020]
+00401020 (01) 50                       PUSH EAX
+00401021 (06) ff1504204000             CALL DWORD [0x402004]
+00401027 (02) 85c0                     TEST EAX, EAX
+00401029 (02) 7427                     JZ 0x401052
+0040102b (07) c745f404000000           MOV DWORD [EBP-0xc], 0x4
+00401032 (03) 8d4df4                   LEA ECX, [EBP-0xc]
+00401035 (01) 51                       PUSH ECX
+00401036 (02) 6a04                     PUSH 0x4
+00401038 (03) 8d55f0                   LEA EDX, [EBP-0x10]
+0040103b (01) 52                       PUSH EDX
+0040103c (02) 6a14                     PUSH 0x14
+0040103e (03) 8b45fc                   MOV EAX, [EBP-0x4]
+00401041 (01) 50                       PUSH EAX
+00401042 (06) ff1500204000             CALL DWORD [0x402000]
+00401048 (02) 85c0                     TEST EAX, EAX
+0040104a (02) 7406                     JZ 0x401052
+0040104c (03) 8b4df0                   MOV ECX, [EBP-0x10]
+0040104f (03) 894df8                   MOV [EBP-0x8], ECX
+00401052 (04) 837dfc00                 CMP DWORD [EBP-0x4], 0x0
+00401056 (02) 740a                     JZ 0x401062
+00401058 (03) 8b55fc                   MOV EDX, [EBP-0x4]
+0040105b (01) 52                       PUSH EDX
+0040105c (06) ff150c204000             CALL DWORD [0x40200c]
+00401062 (03) 8b45f8                   MOV EAX, [EBP-0x8]
+00401065 (02) 8be5                     MOV ESP, EBP
+00401067 (01) 5d                       POP EBP
+00401068 (01) c3                       RET
+00401069 (01) cc                       INT 3
+0040106a (01) cc                       INT 3
+0040106b (01) cc                       INT 3
+0040106c (01) cc                       INT 3
+0040106d (01) cc                       INT 3
+0040106e (01) cc                       INT 3
+0040106f (01) cc                       INT 3
+00401070 (01) 55                       PUSH EBP
+00401071 (02) 8bec                     MOV EBP, ESP
+00401073 (06) 81ec08010000             SUB ESP, 0x108
+00401079 (03) 8b4508                   MOV EAX, [EBP+0x8]
+0040107c (01) 50                       PUSH EAX
+0040107d (02) 6a00                     PUSH 0x0
+0040107f (05) 6810040000               PUSH DWORD 0x410
+00401084 (06) ff1510204000             CALL DWORD [0x402010]
+0040108a (03) 8945fc                   MOV [EBP-0x4], EAX
+0040108d (04) 837dfc00                 CMP DWORD [EBP-0x4], 0x0
+00401091 (02) 7417                     JZ 0x4010aa
+00401093 (05) 6804010000               PUSH DWORD 0x104
+00401098 (06) 8d8df8feffff             LEA ECX, [EBP-0x108]
+0040109e (01) 51                       PUSH ECX
+0040109f (02) 6a00                     PUSH 0x0
+004010a1 (03) 8b55fc                   MOV EDX, [EBP-0x4]
+004010a4 (01) 52                       PUSH EDX
+004010a5 (05) e80a030000               CALL 0x4013b4
+004010aa (06) 8d85f8feffff             LEA EAX, [EBP-0x108]
+004010b0 (01) 50                       PUSH EAX
+004010b1 (05) e80a030000               CALL 0x4013c0
+004010b6 (03) 83c404                   ADD ESP, 0x4
+004010b9 (03) 83f80d                   CMP EAX, 0xd
+004010bc (06) 0f8521010000             JNZ 0x4011e3
+004010c2 (05) b901000000               MOV ECX, 0x1
+004010c7 (03) 6bd100                   IMUL EDX, ECX, 0x0
+004010ca (08) 0fbe8415f8feffff         MOVSX EAX, [EBP+EDX-0x108]
+004010d2 (03) 83f863                   CMP EAX, 0x63
+004010d5 (06) 0f8508010000             JNZ 0x4011e3
+004010db (05) b901000000               MOV ECX, 0x1
+004010e0 (03) 6bd103                   IMUL EDX, ECX, 0x3
+004010e3 (08) 0fbe8415f8feffff         MOVSX EAX, [EBP+EDX-0x108]
+004010eb (05) b901000000               MOV ECX, 0x1
+004010f0 (02) d1e1                     SHL ECX, 0x1
+004010f2 (08) 0fbe940df8feffff         MOVSX EDX, [EBP+ECX-0x108]
+004010fa (03) 83c202                   ADD EDX, 0x2
+004010fd (02) 3bc2                     CMP EAX, EDX
+004010ff (06) 0f85de000000             JNZ 0x4011e3
+00401105 (05) b801000000               MOV EAX, 0x1
+0040110a (03) 6bc800                   IMUL ECX, EAX, 0x0
+0040110d (08) 0fbe940df8feffff         MOVSX EDX, [EBP+ECX-0x108]
+00401115 (05) b801000000               MOV EAX, 0x1
+0040111a (03) 6bc803                   IMUL ECX, EAX, 0x3
+0040111d (08) 0fbe840df8feffff         MOVSX EAX, [EBP+ECX-0x108]
+00401125 (02) 3bd0                     CMP EDX, EAX
+00401127 (06) 0f85b6000000             JNZ 0x4011e3
+0040112d (05) b901000000               MOV ECX, 0x1
+00401132 (03) c1e100                   SHL ECX, 0x0
+00401135 (08) 0fbe940df8feffff         MOVSX EDX, [EBP+ECX-0x108]
+0040113d (03) 83fa72                   CMP EDX, 0x72
+00401140 (06) 0f859d000000             JNZ 0x4011e3
+00401146 (05) b801000000               MOV EAX, 0x1
+0040114b (03) c1e002                   SHL EAX, 0x2
+0040114e (08) 0fbe8c05f8feffff         MOVSX ECX, [EBP+EAX-0x108]
+00401156 (03) 83f96b                   CMP ECX, 0x6b
+00401159 (06) 0f8584000000             JNZ 0x4011e3
+0040115f (05) ba01000000               MOV EDX, 0x1
+00401164 (03) 6bc205                   IMUL EAX, EDX, 0x5
+00401167 (08) 0fbe8c05f8feffff         MOVSX ECX, [EBP+EAX-0x108]
+0040116f (05) ba01000000               MOV EDX, 0x1
+00401174 (03) c1e202                   SHL EDX, 0x2
+00401177 (08) 0fbe8415f8feffff         MOVSX EAX, [EBP+EDX-0x108]
+0040117f (02) 33c8                     XOR ECX, EAX
+00401181 (03) 83f906                   CMP ECX, 0x6
+00401184 (02) 755d                     JNZ 0x4011e3
+00401186 (05) b901000000               MOV ECX, 0x1
+0040118b (03) 6bd107                   IMUL EDX, ECX, 0x7
+0040118e (08) 0fbe8415f8feffff         MOVSX EAX, [EBP+EDX-0x108]
+00401196 (05) b901000000               MOV ECX, 0x1
+0040119b (03) c1e103                   SHL ECX, 0x3
+0040119e (08) 0fbe940df8feffff         MOVSX EDX, [EBP+ECX-0x108]
+004011a6 (02) 3bc2                     CMP EAX, EDX
+004011a8 (02) 7539                     JNZ 0x4011e3
+004011aa (05) b801000000               MOV EAX, 0x1
+004011af (03) c1e003                   SHL EAX, 0x3
+004011b2 (08) 0fbe8c05f8feffff         MOVSX ECX, [EBP+EAX-0x108]
+004011ba (03) 83f934                   CMP ECX, 0x34
+004011bd (02) 7524                     JNZ 0x4011e3
+004011bf (05) ba01000000               MOV EDX, 0x1
+004011c4 (03) 6bc209                   IMUL EAX, EDX, 0x9
+004011c7 (08) 0fbe8c05f8feffff         MOVSX ECX, [EBP+EAX-0x108]
+004011cf (03) 83f92e                   CMP ECX, 0x2e
+004011d2 (02) 750f                     JNZ 0x4011e3
+004011d4 (06) 8b1524304000             MOV EDX, [0x403024]
+004011da (03) 83c201                   ADD EDX, 0x1
+004011dd (06) 891524304000             MOV [0x403024], EDX
+004011e3 (03) 8b45fc                   MOV EAX, [EBP-0x4]
+004011e6 (01) 50                       PUSH EAX
+004011e7 (06) ff150c204000             CALL DWORD [0x40200c]
+004011ed (02) 8be5                     MOV ESP, EBP
+004011ef (01) 5d                       POP EBP
+004011f0 (01) c3                       RET
+004011f1 (01) cc                       INT 3
+004011f2 (01) cc                       INT 3
+004011f3 (01) cc                       INT 3
+004011f4 (01) cc                       INT 3
+004011f5 (01) cc                       INT 3
+004011f6 (01) cc                       INT 3
+004011f7 (01) cc                       INT 3
+004011f8 (01) cc                       INT 3
+004011f9 (01) cc                       INT 3
+004011fa (01) cc                       INT 3
+004011fb (01) cc                       INT 3
+004011fc (01) cc                       INT 3
+004011fd (01) cc                       INT 3
+004011fe (01) cc                       INT 3
+004011ff (01) cc                       INT 3
+00401200 (01) 55                       PUSH EBP
+00401201 (02) 8bec                     MOV EBP, ESP
+00401203 (05) b828110000               MOV EAX, 0x1128
+00401208 (05) e8c3010000               CALL 0x4013d0
+0040120d (02) 6a00                     PUSH 0x0
+0040120f (02) 6a00                     PUSH 0x0
+00401211 (02) 6a00                     PUSH 0x0
+00401213 (06) ff153c204000             CALL DWORD [0x40203c]
+00401219 (03) 8945ec                   MOV [EBP-0x14], EAX
+0040121c (02) 6a64                     PUSH 0x64
+0040121e (02) 6a00                     PUSH 0x0
+00401220 (05) 6828304000               PUSH DWORD 0x403028
+00401225 (05) e890010000               CALL 0x4013ba
+0040122a (03) 83c40c                   ADD ESP, 0xc
+0040122d (04) 837dec00                 CMP DWORD [EBP-0x14], 0x0
+00401231 (02) 740a                     JZ 0x40123d
+00401233 (05) e968010000               JMP 0x4013a0
+00401238 (05) e963010000               JMP 0x4013a0
+0040123d (05) e8befdffff               CALL 0x401000
+00401242 (03) 8945e0                   MOV [EBP-0x20], EAX
+00401245 (03) 8d45dc                   LEA EAX, [EBP-0x24]
+00401248 (01) 50                       PUSH EAX
+00401249 (05) 6800100000               PUSH DWORD 0x1000
+0040124e (06) 8d8dd8eeffff             LEA ECX, [EBP-0x1128]
+00401254 (01) 51                       PUSH ECX
+00401255 (05) e854010000               CALL 0x4013ae
+0040125a (02) 85c0                     TEST EAX, EAX
+0040125c (02) 750a                     JNZ 0x401268
+0040125e (05) b801000000               MOV EAX, 0x1
+00401263 (05) e942010000               JMP 0x4013aa
+00401268 (03) 8b55dc                   MOV EDX, [EBP-0x24]
+0040126b (03) c1ea02                   SHR EDX, 0x2
+0040126e (03) 8955e4                   MOV [EBP-0x1c], EDX
+00401271 (07) c745fc00000000           MOV DWORD [EBP-0x4], 0x0
+00401278 (02) eb09                     JMP 0x401283
+0040127a (03) 8b45fc                   MOV EAX, [EBP-0x4]
+0040127d (03) 83c001                   ADD EAX, 0x1
+00401280 (03) 8945fc                   MOV [EBP-0x4], EAX
+00401283 (03) 8b4dfc                   MOV ECX, [EBP-0x4]
+00401286 (03) 3b4de4                   CMP ECX, [EBP-0x1c]
+00401289 (06) 0f83aa000000             JAE 0x401339
+0040128f (03) 8b55fc                   MOV EDX, [EBP-0x4]
+00401292 (08) 83bc95d8eeffff00         CMP DWORD [EBP+EDX*4-0x1128], 0x0
+0040129a (06) 0f8494000000             JZ 0x401334
+004012a0 (03) 8b45fc                   MOV EAX, [EBP-0x4]
+004012a3 (07) 8b8c85d8eeffff           MOV ECX, [EBP+EAX*4-0x1128]
+004012aa (01) 51                       PUSH ECX
+004012ab (05) e8c0fdffff               CALL 0x401070
+004012b0 (03) 83c404                   ADD ESP, 0x4
+004012b3 (07) 833d2430400001           CMP DWORD [0x403024], 0x1
+004012ba (02) 7578                     JNZ 0x401334
+004012bc (03) 8b55fc                   MOV EDX, [EBP-0x4]
+004012bf (07) 8b8495d8eeffff           MOV EAX, [EBP+EDX*4-0x1128]
+004012c6 (01) 50                       PUSH EAX
+004012c7 (02) 6a00                     PUSH 0x0
+004012c9 (05) 6810040000               PUSH DWORD 0x410
+004012ce (06) ff1510204000             CALL DWORD [0x402010]
+004012d4 (03) 8945e8                   MOV [EBP-0x18], EAX
+004012d7 (04) 837de800                 CMP DWORD [EBP-0x18], 0x0
+004012db (02) 7417                     JZ 0x4012f4
+004012dd (05) 6804010000               PUSH DWORD 0x104
+004012e2 (06) 8d8dd8feffff             LEA ECX, [EBP-0x128]
+004012e8 (01) 51                       PUSH ECX
+004012e9 (02) 6a00                     PUSH 0x0
+004012eb (03) 8b55e8                   MOV EDX, [EBP-0x18]
+004012ee (01) 52                       PUSH EDX
+004012ef (05) e8c0000000               CALL 0x4013b4
+004012f4 (07) c745f400000000           MOV DWORD [EBP-0xc], 0x0
+004012fb (02) eb09                     JMP 0x401306
+004012fd (03) 8b45f4                   MOV EAX, [EBP-0xc]
+00401300 (03) 83c001                   ADD EAX, 0x1
+00401303 (03) 8945f4                   MOV [EBP-0xc], EAX
+00401306 (06) 8d8dd8feffff             LEA ECX, [EBP-0x128]
+0040130c (01) 51                       PUSH ECX
+0040130d (05) e8ae000000               CALL 0x4013c0
+00401312 (03) 83c404                   ADD ESP, 0x4
+00401315 (03) 3945f4                   CMP [EBP-0xc], EAX
+00401318 (02) 7318                     JAE 0x401332
+0040131a (03) 8b55f4                   MOV EDX, [EBP-0xc]
+0040131d (08) 0fbe8415d8feffff         MOVSX EAX, [EBP+EDX-0x128]
+00401325 (06) 030520304000             ADD EAX, [0x403020]
+0040132b (05) a320304000               MOV [0x403020], EAX
+00401330 (02) ebcb                     JMP 0x4012fd
+00401332 (02) eb05                     JMP 0x401339
+00401334 (05) e941ffffff               JMP 0x40127a
+00401339 (06) 8b0d20304000             MOV ECX, [0x403020]
+0040133f (04) 0faf4de0                 IMUL ECX, [EBP-0x20]
+00401343 (03) 034dec                   ADD ECX, [EBP-0x14]
+00401346 (03) 894df0                   MOV [EBP-0x10], ECX
+00401349 (03) 8b45f0                   MOV EAX, [EBP-0x10]
+0040134c (01) 99                       CDQ
+0040134d (05) b950000000               MOV ECX, 0x50
+00401352 (02) f7f9                     IDIV ECX
+00401354 (03) 8955f0                   MOV [EBP-0x10], EDX
+00401357 (07) c745f800000000           MOV DWORD [EBP-0x8], 0x0
+0040135e (02) eb09                     JMP 0x401369
+00401360 (03) 8b55f8                   MOV EDX, [EBP-0x8]
+00401363 (03) 83c201                   ADD EDX, 0x1
+00401366 (03) 8955f8                   MOV [EBP-0x8], EDX
+00401369 (04) 837df81b                 CMP DWORD [EBP-0x8], 0x1b
+0040136d (02) 7d18                     JGE 0x401387
+0040136f (03) 8b45f8                   MOV EAX, [EBP-0x8]
+00401372 (07) 0fbe8800304000           MOVSX ECX, [EAX+0x403000]
+00401379 (03) 334df0                   XOR ECX, [EBP-0x10]
+0040137c (03) 8b55f8                   MOV EDX, [EBP-0x8]
+0040137f (06) 888a28304000             MOV [EDX+0x403028], CL
+00401385 (02) ebd9                     JMP 0x401360
+00401387 (05) 6828304000               PUSH DWORD 0x403028
+0040138c (05) 6844204000               PUSH DWORD 0x402044
+00401391 (06) ff1530204000             CALL DWORD [0x402030]
+00401397 (03) 83c408                   ADD ESP, 0x8
+0040139a (06) ff152c204000             CALL DWORD [0x40202c]
+004013a0 (02) 6a00                     PUSH 0x0
+004013a2 (06) ff151c204000             CALL DWORD [0x40201c]
+004013a8 (02) 33c0                     XOR EAX, EAX
+004013aa (02) 8be5                     MOV ESP, EBP
+004013ac (01) 5d                       POP EBP
+004013ad (01) c3                       RET
+004013ae (06) ff2514204000             JMP DWORD [0x402014]
+004013b4 (06) ff2518204000             JMP DWORD [0x402018]
+004013ba (06) ff2534204000             JMP DWORD [0x402034]
+004013c0 (06) ff2528204000             JMP DWORD [0x402028]
+004013c6 (01) cc                       INT 3
+004013c7 (01) cc                       INT 3
+004013c8 (01) cc                       INT 3
+004013c9 (01) cc                       INT 3
+004013ca (01) cc                       INT 3
+004013cb (01) cc                       INT 3
+004013cc (01) cc                       INT 3
+004013cd (01) cc                       INT 3
+004013ce (01) cc                       INT 3
+004013cf (01) cc                       INT 3
+004013d0 (01) 51                       PUSH ECX
+004013d1 (04) 8d4c2404                 LEA ECX, [ESP+0x4]
+004013d5 (02) 2bc8                     SUB ECX, EAX
+004013d7 (02) 1bc0                     SBB EAX, EAX
+004013d9 (02) f7d0                     NOT EAX
+004013db (02) 23c8                     AND ECX, EAX
+004013dd (02) 8bc4                     MOV EAX, ESP
+004013df (05) 2500f0ffff               AND EAX, 0xfffff000
+004013e4 (02) 3bc8                     CMP ECX, EAX
+004013e6 (02) 720a                     JB 0x4013f2
+004013e8 (02) 8bc1                     MOV EAX, ECX
+004013ea (01) 59                       POP ECX
+004013eb (01) 94                       XCHG ESP, EAX
+004013ec (02) 8b00                     MOV EAX, [EAX]
+004013ee (03) 890424                   MOV [ESP], EAX
+004013f1 (01) c3                       RET
+004013f2 (05) 2d00100000               SUB EAX, 0x1000
+004013f7 (02) 8500                     TEST [EAX], EAX
+004013f9 (02) ebe9                     JMP 0x4013e4
+004013fb (02) 0000                     ADD [EAX], AL
+004013fd (02) 0000                     ADD [EAX], AL
+004013ff (01) 00                       DB 0x0

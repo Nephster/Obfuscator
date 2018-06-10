@@ -18,7 +18,7 @@
 #define ENCRYPT_BLOCK_SIZE 16 
 #define MAX_PATH_LEN 200
 // Link the library into our project.
-#pragma comment(lib, "/Program Files (x86)/Microsoft Visual Studio 11.0/VC/lib/distorm.lib")
+#pragma comment(lib, "./distorm.lib")
 // The number of the array of instructions the decoder function will use to return the disassembled instructions.
 #define MAX_INSTRUCTIONS (100)
 //#define _CRT_SECURE_NO_DEPRECATE 
@@ -124,7 +124,7 @@ int main(int argc, char **argv)
 	fcall = fopen("./CALL.txt", "w+");
 	if (fp == NULL)
 	{
-		printf("Cannot creates ouput file");
+		printf("Cannot creates ouput file\n");
 		return -1;
 	}
 	// Check params.
@@ -142,7 +142,7 @@ int main(int argc, char **argv)
 	return -1;
 	}
 
-
+		
 	hFile = CreateFile(argv[1], GENERIC_WRITE | GENERIC_READ, FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile == INVALID_HANDLE_VALUE) {
 		printf("Could not open file %s (error %d)\n", GetLastError());
@@ -178,15 +178,10 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-
-
-	
-	//CloseHandle(hFile);
-
 	dosHeader = (PIMAGE_DOS_HEADER)lpFileBase;
 	if (dosHeader->e_magic == IMAGE_DOS_SIGNATURE)
 	{
-		printf("It is MZ file");
+		printf("It is MZ file\n");
 
 		DWORD dwOffsetPEheader = (dosHeader->e_lfanew);
 		LPVOID lpAddressOfPEheader = (LPVOID *)(lpFileBase)+dwOffsetPEheader / 4;												// deleno 4 lebo 4 byti
@@ -213,8 +208,6 @@ int main(int argc, char **argv)
 					offset = VirtualAddressOfSection;
 					dwEntryPoint = pSectionHeader[i].VirtualAddress;
 				}
-				//printf("Section Name: %s %x\n", pSectionHeader[i].Name, VirtualAddressOfSection);
-
 
 			}
 		}
@@ -354,7 +347,7 @@ DWORD * readAddress(){
 	DWORD sizeOfFile = GetFileSize(hFile, NULL);
 
 	if (hFile == INVALID_HANDLE_VALUE) {
-		printf("Could not open file (error %d)\n", GetLastError());
+		printf("Could not open file (error %d) %s \n", GetLastError(), pathOfCall);
 		getchar();
 		return 0;
 	}

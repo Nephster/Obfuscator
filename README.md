@@ -1,2 +1,8 @@
 # Obfuscator
 bc project blabla
+The aim of this thesis is the design and implementation of a cryptographic obfuscator, 
+which protects software against reverse engineers. Thesis describes several cryptographic 
+obfuscator designs, and describes in more details the implemented cryptographic. In final part, 
+an analysis of the impact of obfuscation on the application performance is provided. 
+Call graphs of example applications before and after obfuscation are presented as well. 
+Finally, furhter wavs of slowing down the reverse engineer are discussed.

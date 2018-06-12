@@ -5,7 +5,7 @@ obfuscator designs, and describes in more details the implemented cryptographic.
 an analysis of the impact of obfuscation on the application performance is provided. 
 Call graphs of example applications before and after obfuscation are presented as well. 
 Finally, furhter wavs of slowing down the reverse engineer are discussed.
-Project is just prove of concept of another obfuscation technic.Project needs many optimalization.
+Project is just prove of concept of another obfuscation technique.Project needs many optimalization.
 
 
 This is a callgraph of program P with some functionality F.

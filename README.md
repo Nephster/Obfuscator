@@ -6,11 +6,9 @@ an analysis of the impact of obfuscation on the application performance is provi
 Call graphs of example applications before and after obfuscation are presented as well. 
 Finally, furhter wavs of slowing down the reverse engineer are discussed.
 Project is just prove of concept of another obfuscation technic.
-<<<<<<< HEAD
+
 
 This is a callgraph of program P with some functionality F.
 ![Screenshot](callgraph.png)
 After obfuscation we have a callgraph of program P´ with the same functionality F.
 ![Screenshot](callgrapf_after_obfuscation.png)
-=======
->>>>>>> 48f792c0c43b61f638e44230921ee6de0fd23f23

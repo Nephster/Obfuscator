@@ -27,7 +27,8 @@
 BOOL MyEncryptFile(
 	LPTSTR szSource,
 	LPTSTR szDestination,
-	LPTSTR pKeyfile);
+	LPTSTR pKeyfile,
+	LPTSTR pszKeyFile);
 
 void MyHandleError(LPTSTR psz,
 				   int nErrorNumber);
@@ -43,7 +44,8 @@ DWORD Disassembling(FILE *fp,
 					DWORD dwCodeSize, 
 					DWORD offset);
 
-DWORD RVAToOffset(DWORD pMapping, DWORD dwRVA);
+DWORD RvaToOffset(IMAGE_NT_HEADERS *NT, 
+				  DWORD Rva);
 bool AddSection(char *filepath, 
 				char *sectionName, 
 				DWORD sizeOfSection);
@@ -91,7 +93,8 @@ int main(int argc, char **argv)
 	char * pSourceFile =(char *)malloc(MAX_PATH_LEN*sizeof(char));
 	char * pDestinationFile = (char *)malloc(MAX_PATH_LEN*sizeof(char));
 	char * pKeyFile = (char *)malloc(MAX_PATH_LEN*sizeof(char));
-
+	char * pPassword = (char *)malloc(200 * sizeof(char));
+	pPassword = { 0 };
 	char * errch = NULL;
 
 	// Index to file name in argv.
@@ -124,7 +127,7 @@ int main(int argc, char **argv)
 	fcall = fopen("./CALL.txt", "w+");
 	if (fp == NULL)
 	{
-		printf("Cannot creates ouput file\n");
+		printf("Cannot creates ouput file");
 		return -1;
 	}
 	// Check params.
@@ -142,7 +145,7 @@ int main(int argc, char **argv)
 	return -1;
 	}
 
-		
+
 	hFile = CreateFile(argv[1], GENERIC_WRITE | GENERIC_READ, FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile == INVALID_HANDLE_VALUE) {
 		printf("Could not open file %s (error %d)\n", GetLastError());
@@ -178,10 +181,15 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
+
+
+	
+	//CloseHandle(hFile);
+
 	dosHeader = (PIMAGE_DOS_HEADER)lpFileBase;
 	if (dosHeader->e_magic == IMAGE_DOS_SIGNATURE)
 	{
-		printf("It is MZ file\n");
+		printf("It is MZ file");
 
 		DWORD dwOffsetPEheader = (dosHeader->e_lfanew);
 		LPVOID lpAddressOfPEheader = (LPVOID *)(lpFileBase)+dwOffsetPEheader / 4;												// deleno 4 lebo 4 byti
@@ -208,6 +216,8 @@ int main(int argc, char **argv)
 					offset = VirtualAddressOfSection;
 					dwEntryPoint = pSectionHeader[i].VirtualAddress;
 				}
+				//printf("Section Name: %s %x\n", pSectionHeader[i].Name, VirtualAddressOfSection);
+
 
 			}
 		}
@@ -270,7 +280,7 @@ int main(int argc, char **argv)
 	CopyFileA(name, name2, FALSE);
 
 
-	if (!AddSection(name2, ".obf", 4000))
+	if (!AddSection(name2, ".obf", 3000))
 	{
 		printf("Cannot create a section");
 		getchar();
@@ -303,7 +313,7 @@ int main(int argc, char **argv)
 	lstrcat(pDestinationFile, "\\CALLen.txt");
 	lstrcat(pKeyFile, "\\key.txt");
 
-	if (MyEncryptFile(pSourceFile, (LPTSTR)pDestinationFile, (LPTSTR)pKeyFile))
+	if (MyEncryptFile(pSourceFile, (LPTSTR)pDestinationFile, (LPTSTR)pKeyFile, (LPTSTR)pPassword))
 	{
 		printf(
 			"Encryption of the file %s was successful. \n",
@@ -347,7 +357,7 @@ DWORD * readAddress(){
 	DWORD sizeOfFile = GetFileSize(hFile, NULL);
 
 	if (hFile == INVALID_HANDLE_VALUE) {
-		printf("Could not open file (error %d) %s \n", GetLastError(), pathOfCall);
+		printf("Could not open file (error %d)\n", GetLastError());
 		getchar();
 		return 0;
 	}
@@ -489,7 +499,14 @@ bool AddSection(char *filepath, char *sectionName, DWORD sizeOfSection){
 	SH[FH->NumberOfSections].SizeOfRawData = align(sizeOfSection, OH->FileAlignment, 0);
 	SH[FH->NumberOfSections].PointerToRawData = align(SH[FH->NumberOfSections - 1].SizeOfRawData, OH->FileAlignment, SH[FH->NumberOfSections - 1].PointerToRawData);
 	SH[FH->NumberOfSections].Characteristics = 0xE00000E0;
-
+	/*
+	0xE00000E0 = IMAGE_SCN_MEM_WRITE |
+	IMAGE_SCN_CNT_CODE  |
+	IMAGE_SCN_CNT_UNINITIALIZED_DATA  |
+	IMAGE_SCN_MEM_EXECUTE |
+	IMAGE_SCN_CNT_INITIALIZED_DATA |
+	IMAGE_SCN_MEM_READ
+	*/
 	SetFilePointer(file, SH[FH->NumberOfSections].PointerToRawData + SH[FH->NumberOfSections].SizeOfRawData, NULL, FILE_BEGIN);
 	//end the file right here,on the last section + it's own size
 	SetEndOfFile(file);
@@ -528,6 +545,8 @@ bool AddCode(char *filepath){
 	PIMAGE_DOS_HEADER dos = (PIMAGE_DOS_HEADER)pByte;
 	PIMAGE_NT_HEADERS nt = (PIMAGE_NT_HEADERS)(pByte + dos->e_lfanew);
 
+	//since we added a new section,it must be the last section added,cause of the code inside
+	//AddSection function,thus we must get to the last section to insert our secret data :)
 	PIMAGE_SECTION_HEADER first = IMAGE_FIRST_SECTION(nt);
 	PIMAGE_SECTION_HEADER last = first + (nt->FileHeader.NumberOfSections - 1);
 
@@ -535,13 +554,17 @@ bool AddCode(char *filepath){
 
 	char * name = (char *)malloc(MAX_PATH);
 	GetCurrentDirectoryA(MAX_PATH, name);
-	lstrcatA(name, "\\obFun.exe");
+	lstrcatA(name, "\\inlineAsm.exe");
 	HANDLE hFile = CreateFileA(name, GENERIC_WRITE | GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile == INVALID_HANDLE_VALUE) {
 		printf("Could not open file %s (error %d)\n", GetLastError());
 		getchar();
 		return false;
 	}
+	//LARGE_INTEGER liDistanceToMove;
+	//liDistanceToMove.QuadPart = 1000;
+
+	//SetFilePointerEx(hFile,liDistanceToMove, NULL, FILE_BEGIN); 
 
 	DWORD fileSize = GetFileSize(hFile, NULL);
 	char * buf = (char *)malloc(fileSize);
@@ -555,45 +578,43 @@ bool AddCode(char *filepath){
 
 	WriteFile(ObfFile, buf, fileSize, &dw, 0);
 	free(buf);
+	//CloseHandle();
 	return TRUE;
 }
 
-DWORD RVAToOffset(DWORD pMapping, DWORD dwRVA)
+DWORD RvaToOffset(IMAGE_NT_HEADERS *NT, DWORD Rva)
 {
-		//Defines
-		DWORD pNTDst = 0;
-		IMAGE_DOS_HEADER* pidh = (IMAGE_DOS_HEADER*)pMapping;
-		pNTDst = pMapping + pidh->e_lfanew;
-		DWORD pSeDst = pNTDst;
-		IMAGE_NT_HEADERS* pinh = (IMAGE_NT_HEADERS*)pNTDst;
-		IMAGE_SECTION_HEADER* pish = NULL;
+	DWORD Offset = Rva, Limit;
+	IMAGE_SECTION_HEADER *Img;
+	WORD i;
 
-		//First Session
-		pSeDst = pNTDst + sizeof(IMAGE_NT_HEADERS);
-		pish = (IMAGE_SECTION_HEADER*)pSeDst;
+	Img = IMAGE_FIRST_SECTION(NT);
 
-		//Session Count
-		UINT nCount = pinh->FileHeader.NumberOfSections;
-		DWORD dwPosTmp = 0;
+	if (Rva < Img->PointerToRawData)
+		return Rva;
 
-		//Scan
-		for (UINT i = 0; i<nCount; i++)
+	for (i = 0; i < NT->FileHeader.NumberOfSections; i++)
+	{
+		if (Img[i].SizeOfRawData)
+			Limit = Img[i].SizeOfRawData;
+		else
+			Limit = Img[i].Misc.VirtualSize;
+
+		if (Rva >= Img[i].VirtualAddress &&
+			Rva < (Img[i].VirtualAddress + Limit))
 		{
-			if (dwRVA >= pish->VirtualAddress)
+			if (Img[i].PointerToRawData != 0)
 			{
-				dwPosTmp = pish->VirtualAddress;
-				dwPosTmp += pish->SizeOfRawData;
+				Offset -= Img[i].VirtualAddress;
+				Offset += Img[i].PointerToRawData;
 			}
-			if (dwRVA<dwPosTmp)
-			{
-				dwRVA = dwRVA - pish->VirtualAddress;
-				return dwRVA + pish->PointerToRawData;
-			}
-			pish = pish + 1;//sizeof(IMAGE_SECTION_HEADER);
-		}
-		return -1;
-}
 
+			return Offset;
+		}
+	}
+
+	return NULL;
+}
 
 
 __int64 myFileSeek(HANDLE hf, __int64 distance, DWORD MoveMethod)
@@ -620,12 +641,10 @@ __int64 myFileSeek(HANDLE hf, __int64 distance, DWORD MoveMethod)
 DWORD PeSectionEnum(DWORD *ArrayOfaddressesComeFrom, char path[MAX_PATH_LEN])
 {
 	PIMAGE_DOS_HEADER		pDosHeader;
-	PIMAGE_NT_HEADERS		pNtHeaders = {};
+	PIMAGE_NT_HEADERS		pNtHeaders;
 	PIMAGE_SECTION_HEADER	pSectionHeader;
 	LPVOID					pMappedFile;
 	char*					pMappedFileCall;
-	char*					pMappedStrAES;
-	char*					pMappedPushStr;
 	IMAGE_OPTIONAL_HEADER optionalHeader = { 0 };
 	DWORD virtualAddressOfSectionObf;
 	DWORD sizeOfVirtualSectonObf;
@@ -633,8 +652,6 @@ DWORD PeSectionEnum(DWORD *ArrayOfaddressesComeFrom, char path[MAX_PATH_LEN])
 	HANDLE hFileMapping = CreateFileMapping(ObfFile, NULL, PAGE_READWRITE, 0, 0, NULL);
 	DWORD dwImageBase = 0;
 	LPVOID pHelpFunctionCall = 0;
-	LPVOID RVApBaseStringAES = 0;
-	LPVOID RVAsetString = 0;
 	LPVOID pBaseFunctionAbsoluteCall = 0;
 	LPVOID pBaseFunctionRelativeCall = 0;
 	DWORD virtualAddressOfCode = 0;
@@ -682,7 +699,6 @@ DWORD PeSectionEnum(DWORD *ArrayOfaddressesComeFrom, char path[MAX_PATH_LEN])
 			}
 			if (!strcmp((char *)pSectionHeader[i].Name, ".obf")){
 				virtualAddressOfSectionObf = pSectionHeader[i].VirtualAddress;
-				
 				sizeOfVirtualSectonObf = pSectionHeader[i].SizeOfRawData;
 			}
 		}
@@ -690,56 +706,42 @@ DWORD PeSectionEnum(DWORD *ArrayOfaddressesComeFrom, char path[MAX_PATH_LEN])
 
 	//pBuffer =(char *) pBuffer + virtualAddressOfSectionObf;
 	//liDistanceToMove.QuadPart = virtualAddressOfSectionObf;
-	printf("stop\n");
+
 	//pMappedFile = (char *)VirtualAlloc(NULL, GetFileSize(hFileMapping, NULL), MEM_COMMIT, 0);
-	//DWORD tmp = RVAToOffset((DWORD) BaseOfpMappedFile, ArrayOfaddressesComeFrom[8]);
-	
-	pMappedFile = BaseOfpMappedFile;
-	pMappedFileCall = (char *)BaseOfpMappedFile;	
+
+	PLARGE_INTEGER lpCurrentPosition = 0;
+	pMappedFile = (char *)BaseOfpMappedFile;
+	pMappedFileCall = (char *)BaseOfpMappedFile;
+	pMappedFile = (char *)pMappedFile + virtualAddressOfSectionObf;
 	pBaseFunctionAbsoluteCall = (char *)(virtualAddressOfSectionObf + 0x328);
 	pBaseFunctionRelativeCall = (char *)(virtualAddressOfSectionObf + 0x34A);
-	RVApBaseStringAES = (char *)(virtualAddressOfSectionObf + 0xA40);			//mapping string AES....	
-	RVAsetString = (char *)(virtualAddressOfSectionObf + 0x8fd);				//mapping push string AES to function	
+
 	//pMappedFile = (char *)pBaseFunctionAbsoluteCall+0x73;
-	//pMappedFile = (char *)pMappedFile + virtualAddressOfSectionObf;
-	//pMappedFileCall = (char *)pMappedFileCall + 0x18FD;
-
-	
+	// printf("%s", pMappedFile);
 	//pHelpFunctionCall = (char *)pMappedFile + 0xA26;
-	//DWORD tmp = RVAToOffset((DWORD)BaseOfpMappedFile, ArrayOfaddressesComeFrom[0]);
-	//RVApBaseStringAES = (char *)(virtualAddressOfSectionObf + 0xA40);
 	
-	//printf("%s", RVApBaseStringAES);
-	pMappedPushStr = (char *)pMappedFileCall + RVAToOffset((DWORD)BaseOfpMappedFile, (DWORD)RVAsetString) + sizeof(char);
-
-	//pMappedStrAES = (char *)RVAsetString + dwImageBase; //mapped string AES ......
-	*((DWORD *)pMappedPushStr) = (DWORD)RVApBaseStringAES + dwImageBase;
-	
-
-
 	int j = 0;
-	
-		while (ArrayOfaddressesComeFrom[j]){			//rewrite address of CALL functions 
+	while (ArrayOfaddressesComeFrom[j]){
 
-			pMappedFileCall = (char *)pMappedFileCall + RVAToOffset((DWORD)BaseOfpMappedFile, ArrayOfaddressesComeFrom[j]);
+		pMappedFileCall = (char *)pMappedFileCall + ArrayOfaddressesComeFrom[j];
 
-			if (*((WORD *)pMappedFileCall) == 0x15FF){
-				*((char *)pMappedFileCall) = 0xE8;
-				(char *)pMappedFileCall += 1;
-				*((DWORD *)pMappedFileCall) = (DWORD)pBaseFunctionRelativeCall - ArrayOfaddressesComeFrom[j] + 0x69E;
-				(char *)pMappedFileCall += 4;
-				*((char *)pMappedFileCall) = 0x90;
-			}
-
-			if (*((char *)pMappedFileCall) == (char)0xE8){
-				(char *)pMappedFileCall += 1;
-
-				*((DWORD *)pMappedFileCall) = (DWORD)pBaseFunctionAbsoluteCall - ArrayOfaddressesComeFrom[j] + 0x69C;
-			}
-			j++;
-			pMappedFileCall = (char *)BaseOfpMappedFile;
+		if (*((WORD *)pMappedFileCall) == 0x15FF){
+			*((char *)pMappedFileCall) = 0xE8;
+			(char *)pMappedFileCall += 1;
+			*((DWORD *)pMappedFileCall) = (DWORD)pBaseFunctionRelativeCall - ArrayOfaddressesComeFrom[j] +0x69E;
+			(char *)pMappedFileCall += 4;
+			*((char *)pMappedFileCall) = 0x90;
 		}
-	
+
+		if (*((char *)pMappedFileCall) == (char)0xE8){
+			(char *)pMappedFileCall += 1;
+
+			*((DWORD *)pMappedFileCall) = (DWORD)pBaseFunctionAbsoluteCall - ArrayOfaddressesComeFrom[j]+0x69C;
+		}
+		j++;
+		pMappedFileCall = (char *)BaseOfpMappedFile;
+	}
+
 
 
 
@@ -770,7 +772,8 @@ DWORD PeSectionEnum(DWORD *ArrayOfaddressesComeFrom, char path[MAX_PATH_LEN])
 int MyEncryptFile(
 	LPTSTR pszSourceFile,
 	LPTSTR pszDestinationFile,
-	LPTSTR pKeyFile)
+	LPTSTR pKeyFile,
+	LPTSTR pszPassword)
 {
 	//---------------------------------------------------------------
 	// Declare and initialize local variables.
@@ -885,6 +888,8 @@ int MyEncryptFile(
 	}
 	//---------------------------------------------------------------
 	// Create the session key.
+	if (!pszPassword || !pszPassword[0])
+	{
 		
 		//-----------------------------------------------------------
 		// No password was passed.
@@ -994,8 +999,77 @@ int MyEncryptFile(
 		// Free memory.
 		free(pbKeyBlob);
 		CloseHandle(hKeyFile);
-	
-	
+	}
+	else
+	{
+
+		//-----------------------------------------------------------
+		// The file will be encrypted with a session key derived 
+		// from a password.
+		// The session key will be recreated when the file is 
+		// decrypted only if the password used to create the key is 
+		// available. 
+
+		//-----------------------------------------------------------
+		// Create a hash object. 
+		if (CryptCreateHash(
+			hProvider,
+			CALG_SHA1,
+			0,
+			0,
+			&hHash))
+		{
+			printf("A hash object has been created. \n");
+		}
+		else
+		{
+			MyHandleError(
+				"Error during CryptCreateHash!\n",
+				GetLastError());
+			goto Exit_MyEncryptFile;
+		}
+
+		//-----------------------------------------------------------
+		// Hash the password. 
+		if (CryptHashData(
+			hHash,
+			(BYTE *)pszPassword,
+			lstrlen(pszPassword),
+			0))
+		{
+			printf(
+				"The password has been added to the hash. \n");
+		}
+		else
+		{
+			MyHandleError(
+				"Error during CryptHashData. \n",
+				GetLastError());
+			goto Exit_MyEncryptFile;
+		}
+
+		//-----------------------------------------------------------
+		// Derive a session key from the hash object. 
+		if (CryptDeriveKey(
+			hProvider,
+			ENCRYPT_ALGORITHM,
+			hHash,
+			CRYPT_EXPORTABLE,
+			&hKey))
+		{
+			printf(
+				"An encryption key is derived from the "
+				"password hash. \n");
+		}
+		else
+		{
+			MyHandleError(
+				"Error during CryptDeriveKey!\n",
+				GetLastError());
+			goto Exit_MyEncryptFile;
+		}
+
+	}
 	//---------------------------------------------------------------
 	// The session key is now ready. If it is not a key derived from 
 	// a  password, the session key encrypted with the private key 
